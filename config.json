@@ -1,13 +1,36 @@
 {
     "discord": {
-        "token": "Nzg0NTAzOTQwOTUwNTIzOTA1.X8qQOg._giNZwotw6CleoK5l2jU_QtIlV0",
+        "token": "ODcxMjA3NTM2OTA3NDA3MzYw.YQX9Pw.mRXEHYcYBen0NR15I9y93eePKwA",
         "prefix": "!",
 
         "guilds": {
             "893974777956544513": {
                 "channels": {
                     "Discord Logs": "966879922985504829"
+                },
+
+                "roles": {
+                    "Muted": "966895087864934460"
                 }
+            }
+        },
+
+        "anti_raid": {
+            "enabled": true,
+
+            "joins": {
+                "enabled": true,
+                "trigger": 30,
+                "punishment": "kick",
+                "time": 60
+            },
+
+            "new_accounts": {
+                "enabled": true,
+                "trigger": 30,
+                "punishment": "kick",
+                "time": 45,
+                "account_age": 14
             }
         }
     },
