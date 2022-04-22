@@ -1,0 +1,77 @@
+import { GuildMember, User } from "discord.js";
+import { Command } from "../../structures/Command";
+
+import Mute from "../../models/mute.model";
+
+import ms from "ms";
+
+export default new Command({
+    name: "mute",
+    description: "Mutes a user in the discord.",
+    userPermissions: ["MANAGE_MESSAGES"],
+    options: [
+        {
+            name: "target",
+            description: "Select a user you want to ban.",
+            type: "USER",
+            required: true
+        },
+        {
+            name: "reason",
+            description: "What is the reason for kicking this user?",
+            type: "STRING",
+            required: true
+        },
+        {
+            name: "duration",
+            description: "How long are you muting this user for?",
+            type: "STRING",
+            required: false
+        }
+    ],
+
+    run: async ({ client, interaction }) =>
+    {
+        let target: User        = interaction.options.getUser("target");
+        let reason: string      = interaction.options.getString("reason");
+        let duration: string    = interaction.options.getString("duration");
+
+        let member: GuildMember = interaction.guild.members.resolve(target.id);
+
+        if (!member)
+        {
+            return interaction.followUp('❌ Could not find the user.');
+        }
+
+        let interaction_member: GuildMember = await interaction.guild.members.fetch(interaction.user.id);
+
+        if (!member)
+        {
+            return interaction.followUp(`❌ Couldn't find ${target} in the server.`);
+        }
+
+        if (reason?.length < 3)
+        {
+            return interaction.followUp(`❌ Please provide a more detailed reason.`);
+        }
+
+        if (member.roles.highest.comparePositionTo(interaction_member.roles.highest) > 0)
+        {
+            return interaction.followUp(`❌ Couldn't mute ${member} as they're higher than you.`);
+        }
+
+        let parsedDuration: number = ms(duration ?? "0") ?? 0;
+
+        let member_mention_str:             string = client.mention_str(member.user);
+        let interaction_member_mention_str: string = client.mention_str(interaction_member.user);
+
+        client.channel_log(
+            interaction.guildId, 
+            parsedDuration !== 0
+                ? `🤐 ${interaction_member_mention_str} temporarily muted ${member_mention_str} for **${duration}**\n\`[ Reason ]\` ${reason}`
+                : `🔇 ${interaction_member_mention_str} permanently muted ${member_mention_str}\n\`[ Reason ]\` ${reason}`
+        );
+
+        return interaction.followUp(`✅ ${member} was muted.`);
+    }
+})
