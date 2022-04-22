@@ -1,4 +1,4 @@
-import { GuildMember } from "discord.js";
+import { GuildMember, User } from "discord.js";
 import { Command } from "../../structures/Command";
 
 export default new Command({
@@ -20,12 +20,18 @@ export default new Command({
         }
     ],
 
-    run: async ({ interaction }) =>
+    run: async ({ client, interaction }) =>
     {
-        let target = interaction.options.getUser("target");
-        let reason = interaction.options.getString("reason");
+        let target: User = interaction.options.getUser("target");
+        let reason: String = interaction.options.getString("reason");
 
-        let member: GuildMember = await interaction.guild.members.fetch(target.id);
+        let member: GuildMember = interaction.guild.members.resolve(target.id);
+
+        if (!member)
+        {
+            return interaction.followUp('🚫 Could not find the user.');
+        }
+
         let interaction_member: GuildMember = await interaction.guild.members.fetch(interaction.user.id);
 
         if (!member)
@@ -53,6 +59,14 @@ export default new Command({
             days: 7
         });
 
-        return interaction.followUp(`🚫 Banned ${member.user.username} for ${reason}.`);
+        let member_mention_str:             string = client.mention_str(member.user);
+        let interaction_member_mention_str: string = client.mention_str(interaction_member.user);
+
+        client.channel_log(
+            interaction.guildId, 
+            `⚒️ **${interaction_member_mention_str}** Banned User **${member_mention_str}** for '**${reason}**'`
+        );
+
+        return interaction.followUp(`🚫 Banned ${member.user.username} for **${reason}**.`);
     }
 })

@@ -6,11 +6,12 @@ import {
     Client, 
     ClientEvents, 
     Collection, 
-    FetchGuildOptions,
+    User,
     Guild, 
     NonThreadGuildBasedChannel, 
     MessageEmbed, 
-    TextChannel 
+    TextChannel,
+    Snowflake
 } from "discord.js";
 
 import { Event } from "../structures/Event";
@@ -29,11 +30,9 @@ export class RLClient extends Client
         super({ intents: 32767 });
     }
 
-    channel_log = async (fetchGuildOptions: FetchGuildOptions, content: string, embed?: MessageEmbed) =>
+    channel_log = async (guildId: Snowflake, content: string, embed?: MessageEmbed) =>
     {  
-        content += `[${new Date().toUTCString()}]`;
-
-        let guild: Guild = await this.guilds.fetch(fetchGuildOptions);
+        let guild: Guild = await this.guilds.fetch(guildId);
 
         if (!guild) return;
 
@@ -44,9 +43,23 @@ export class RLClient extends Client
         let text_channel: NonThreadGuildBasedChannel | TextChannel = await guild.channels.fetch(channel_id);
             text_channel = text_channel as TextChannel;
 
-        await text_channel.send({ content, embeds: [embed] });
+        let message_payload: any = {
+            content
+        };
+
+        if (embed) 
+        {
+            message_payload = { 
+                ...message_payload,
+                embeds: [embed] 
+            };
+        }
+
+        await text_channel.send(message_payload);
     }
 
+    mention_str = (user: User) => `${user} ${user.username}#${user.discriminator} (${user.id})`
+    
     start = () =>
     {
         this.registerModules();
