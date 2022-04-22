@@ -42,6 +42,7 @@ export class RLClient extends Client
 
         let guild: Guild = (await this.guilds.fetch(guildId));
 
+        guild.commands.set([]);
         guild.commands.set(commands);
 
         console.log(`[DEBUG] Registerd Guild: ${guild.name}`);
@@ -63,8 +64,8 @@ export class RLClient extends Client
 
             slashCommands.push(command);
         });
-
-        this.on("ready", () =>
+        
+        this.on("ready", async() =>
         {
             for (const guildId in config.discord.guilds)
             {

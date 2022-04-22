@@ -1,3 +1,4 @@
+import { GuildMember } from "discord.js";
 import { Command } from "../../structures/Command";
 
 export default new Command({
@@ -23,9 +24,9 @@ export default new Command({
     {
         let target = interaction.options.getUser("target");
         let reason = interaction.options.getString("reason");
-        let user   = interaction.user;
 
-        let member = await interaction.guild.members.fetch(target.id);
+        let member: GuildMember = await interaction.guild.members.fetch(target.id);
+        let interaction_member: GuildMember = await interaction.guild.members.fetch(interaction.user.id);
 
         if (!member)
         {
@@ -34,7 +35,24 @@ export default new Command({
 
         if (!member.bannable)
         {
-            return interaction.followUp("🚫 Couldn't ban ${user.username}.");
+            return interaction.followUp(`🚫 Couldn't ban ${member.user.username} (Discord API Says they're unbannable).`);
         }
+
+        if (reason?.length < 3)
+        {
+            return interaction.followUp(`🚫 Please provide a more detailed reason.`);
+        }
+
+        if (member.roles.highest.comparePositionTo(interaction_member.roles.highest) > 0)
+        {
+            return interaction.followUp(`🚫 Could not ban ${member.user.username} as they're higher than you.`);
+        }
+
+        await member.ban({
+            reason: `${interaction_member.user.username} @ ${new Date().toUTCString()} - ${reason}`,
+            days: 7
+        });
+
+        return interaction.followUp(`🚫 Banned ${member.user.username} for ${reason}.`);
     }
 })
