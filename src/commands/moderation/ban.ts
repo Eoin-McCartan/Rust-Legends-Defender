@@ -29,29 +29,29 @@ export default new Command({
 
         if (!member)
         {
-            return interaction.followUp('🚫 Could not find the user.');
+            return interaction.followUp('❌ Could not find the user.');
         }
 
         let interaction_member: GuildMember = await interaction.guild.members.fetch(interaction.user.id);
 
         if (!member)
         {
-            return interaction.channel.send(`🚫 Couln't find ${target.username} in the server.`);
+            return interaction.followUp(`❌ Couldn't find ${target} in the server.`);
         }
 
         if (!member.bannable)
         {
-            return interaction.followUp(`🚫 Couldn't ban ${member.user.username} (Discord API Says they're unbannable).`);
+            return interaction.followUp(`❌ Couldn't ban ${member} (Discord API Says they're unbannable).`);
         }
 
         if (reason?.length < 3)
         {
-            return interaction.followUp(`🚫 Please provide a more detailed reason.`);
+            return interaction.followUp(`❌ Please provide a more detailed reason.`);
         }
 
         if (member.roles.highest.comparePositionTo(interaction_member.roles.highest) > 0)
         {
-            return interaction.followUp(`🚫 Could not ban ${member.user.username} as they're higher than you.`);
+            return interaction.followUp(`❌ Could not ban ${member} as they're higher than you.`);
         }
 
         await member.ban({
@@ -64,9 +64,9 @@ export default new Command({
 
         client.channel_log(
             interaction.guildId, 
-            `⚒️ **${interaction_member_mention_str}** Banned User **${member_mention_str}** for '**${reason}**'`
+            `🔨 ${interaction_member_mention_str} banned ${member_mention_str}\n\`[ Reason ]\` ${reason}`
         );
 
-        return interaction.followUp(`🚫 Banned ${member.user.username} for **${reason}**.`);
+        return interaction.followUp(`✅ ${member} was banned.`);
     }
 })
