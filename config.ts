@@ -10,5 +10,10 @@ export default interface Config {
                 }
             }
         }
+    },
+
+    mongoose: {
+        address: string;
+        database: string;
     }
 }
