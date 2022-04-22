@@ -1,0 +1,14 @@
+{
+    "discord": {
+        "token": "ODEwNjEyOTU2NTkyMjA5OTkw.YCmMJQ.dkUIxKiAdU6PbA1FAT1VMf1uGas",
+        "prefix": "!",
+
+        "guilds": {
+            "893974777956544513": {
+                "channels": {
+                    "Discord Logs": "966879922985504829"
+                }
+            }
+        }
+    }
+}
