@@ -15,15 +15,16 @@ import {
 } from "discord.js";
 
 import { Event } from "../structures/Event";
-import { CommandType } from "../typings/Command";
-import { RegisterCommandsOptions } from "../typings/Client";
+import { ICommandType } from "../typings/Command";
+import { ICommandOptions } from "../typings/Client";
 
 import glob from "glob-promise";
 
+
 export class RLClient extends Client
 {
-    public config: Config;
-    public commands: Collection<string, CommandType> = new Collection();
+    public config: Config = config;
+    public commands: Collection<string, ICommandType> = new Collection();
 
     constructor()
     {
@@ -43,8 +44,11 @@ export class RLClient extends Client
         let text_channel: NonThreadGuildBasedChannel | TextChannel = await guild.channels.fetch(channel_id);
             text_channel = text_channel as TextChannel;
 
+        let date        = new Date().toUTCString();
+        let timestamp   = date.match(/\d{2}:\d{2}:\d{2}/); // POGU!
+
         let message_payload: any = {
-            content
+            content: `\`[${timestamp}]\` ${content}`,
         };
 
         if (embed) 
@@ -58,38 +62,34 @@ export class RLClient extends Client
         await text_channel.send(message_payload);
     }
 
-    mention_str = (user: User) => `${user} ${user.username}#${user.discriminator} (${user.id})`
+    mention_str = (user: User) => `${user} **${user.username}**#${user.discriminator} (${user.id})`;
     
+    muted_role = (guildId: Snowflake) => config.discord.guilds[guildId]?.roles["Muted"];
+
     start = () =>
     {
-        this.registerModules();
+        this.register_modules();
 
         this.login(config.discord.token);
     }
 
-    importFile = async (path: string) =>
+    import_file = async (path: string) =>
     {
         return (await import(path))?.default;
     }
 
-    registerCommands = async ({ guildId, commands }: RegisterCommandsOptions) =>
+    register_commands = async ({ guildId, commands }: ICommandOptions) =>
     {
-        if (!guildId)
-        {
-            this.application.commands.set(commands);
-
-            return;
-        }
+        if (!guildId) return;
 
         let guild: Guild = (await this.guilds.fetch(guildId));
-
-        guild.commands.set([]);
+        
         guild.commands.set(commands);
 
         console.log(`[DEBUG] Registerd Guild: ${guild.name}`);
     }
 
-    registerModules = async () =>
+    register_modules = async () =>
     {
         const slashCommands: ApplicationCommandDataResolvable[] = [];
 
@@ -97,7 +97,7 @@ export class RLClient extends Client
     
         commandFiles.forEach(async (filePath: string) =>
         {
-            const command: CommandType = await this.importFile(filePath);
+            const command: ICommandType = await this.import_file(filePath);
 
             if (!command.name) return;
 
@@ -110,7 +110,7 @@ export class RLClient extends Client
         {
             for (const guildId in config.discord.guilds)
             {
-                this.registerCommands({ guildId, commands: slashCommands });
+                this.register_commands({ guildId, commands: slashCommands });
             }
         });
 
@@ -118,7 +118,7 @@ export class RLClient extends Client
 
         eventFiles.forEach(async (filePath: string) =>
         {
-            const event: Event<keyof ClientEvents> = await this.importFile(filePath);
+            const event: Event<keyof ClientEvents> = await this.import_file(filePath);
 
             this.on(event.name, event.run);
         });

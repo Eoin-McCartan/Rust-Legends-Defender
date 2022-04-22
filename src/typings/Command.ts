@@ -7,15 +7,15 @@ import {
 
 import { RLClient } from "../structures/Client";
 
-interface Options {
+interface IClientOptions {
     client: RLClient,
     interaction: CommandInteraction,
     args: CommandInteractionOptionResolver
 };
 
-type Run = (options: Options) => any;
+type Run = (options: IClientOptions) => any;
 
-export type CommandType = {
+export type ICommandType = {
     userPermissions?: PermissionResolvable[];
     cooldown?: number;
     run: Run;
