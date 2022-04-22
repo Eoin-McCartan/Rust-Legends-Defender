@@ -1,7 +1,17 @@
 import Config from "../../config";
 const config: Config = require("../../config.json");
 
-import { ApplicationCommandDataResolvable, Client, ClientEvents, Collection, Guild } from "discord.js";
+import { 
+    ApplicationCommandDataResolvable, 
+    Client, 
+    ClientEvents, 
+    Collection, 
+    FetchGuildOptions,
+    Guild, 
+    NonThreadGuildBasedChannel, 
+    MessageEmbed, 
+    TextChannel 
+} from "discord.js";
 
 import { Event } from "../structures/Event";
 import { CommandType } from "../typings/Command";
@@ -17,6 +27,24 @@ export class RLClient extends Client
     constructor()
     {
         super({ intents: 32767 });
+    }
+
+    channel_log = async (fetchGuildOptions: FetchGuildOptions, content: string, embed?: MessageEmbed) =>
+    {  
+        content += `[${new Date().toUTCString()}]`;
+
+        let guild: Guild = await this.guilds.fetch(fetchGuildOptions);
+
+        if (!guild) return;
+
+        let channel_id: string = config.discord.guilds[guild.id]?.channels["Discord Logs"];
+
+        if (!channel_id) return;
+
+        let text_channel: NonThreadGuildBasedChannel | TextChannel = await guild.channels.fetch(channel_id);
+            text_channel = text_channel as TextChannel;
+
+        await text_channel.send({ content, embeds: [embed] });
     }
 
     start = () =>
