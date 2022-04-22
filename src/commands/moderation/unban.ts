@@ -1,6 +1,5 @@
-import { GuildMember } from "discord.js";
+import { Collection, Guild, GuildBan, GuildBanResolvable, GuildMember } from "discord.js";
 import { Command } from "../../structures/Command";
-import ban from "./ban";
 
 export default new Command({
     name: "unban",
@@ -21,34 +20,36 @@ export default new Command({
         }
     ],
 
-    run: async ({ interaction }) =>
+    run: async ({ client, interaction }) =>
     {
-        let target = interaction.options.getString("target");
-        let reason = interaction.options.getString("reason");
+        let target: string  = interaction.options.getString("target");
+        let reason: string  = interaction.options.getString("reason");
 
-        let interaction_member: GuildMember = await interaction.guild.members.fetch(interaction.user.id);
-
-        let bans = await interaction.guild.bans.fetch();
-
-        if (bans.size === 0)
-        {
-            return interaction.channel.send(`🚫 There are no bans in this server.`);
-        }
+        let interaction_member: GuildMember = interaction.guild.members.resolve(interaction.user.id);
 
         if (reason?.length < 3)
         {
-            return interaction.followUp(`🚫 Please provide a more detailed reason.`);
+            return interaction.followUp(`❌ Please provide a more detailed reason.`);
         }
 
-        let target_ban = bans.find(ban => ban.user.id === target);
+        let bans: Collection<string, GuildBan> = await interaction.guild.bans.fetch();
+        let target_ban: GuildBan = bans.find(ban => ban.user.id === target);
 
         if (!target_ban)
         {
-            return interaction.followUp(`🚫 Couldn't find a ban for ${target}.`);
+            return interaction.followUp(`❌ <@${target}> is not banned.`);
         }
 
         await interaction.guild.bans.remove(target, `${interaction_member.user.username} @ ${new Date().toUTCString()} - ${reason}`);
 
-        return interaction.followUp(`🚫 Unbanned ${target} for ${reason}.`);
+        let member_mention_str:             string = client.mention_str(target_ban.user);
+        let interaction_member_mention_str: string = client.mention_str(interaction_member.user);
+
+        client.channel_log(
+            interaction.guildId, 
+            `🔧 ${interaction_member_mention_str} unbanned ${member_mention_str}\n\`[ Reason ]\` ${reason}`
+        );
+
+        return interaction.followUp(`✅ <@${target}> was unbanned.`);
     }
 })
