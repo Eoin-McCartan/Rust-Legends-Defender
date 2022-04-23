@@ -2,6 +2,9 @@ import Config from "../../config";
 const config: Config = require("../../config.json");
 
 import { 
+    ApplicationCommand,
+    ApplicationCommandData,
+    ApplicationCommandResolvable,
     ApplicationCommandDataResolvable, 
     Client, 
     ClientEvents, 
@@ -20,7 +23,6 @@ import { ICommandType } from "../typings/Command";
 import { ICommandOptions } from "../typings/Client";
 
 import glob from "glob-promise";
-
 
 export class RLClient extends Client
 {
@@ -93,9 +95,25 @@ export class RLClient extends Client
 
         let guild: Guild = (await this.guilds.fetch(guildId));
         
-        console.log(commands[0]);
+        let commands_result: ApplicationCommand[] = [...(await guild.commands.set(commands)).values()];
 
-        guild.commands.set(commands)
+        for (let i = 0; i < commands_result.length; i++)
+        {
+            await commands_result[i].edit(<ApplicationCommandData>{
+                defaultPermission: false
+            });
+
+            let mod_role_id: string = config.discord.guilds[guild.id]?.roles["Moderator"];
+
+            await guild.commands.permissions.add({
+                command: commands_result[i].id,
+                permissions: [{
+                    id: mod_role_id,
+                    type: 'ROLE',
+                    permission: true
+                }]
+            });
+        }
 
         console.log(`[DEBUG] Registerd Guild: ${guild.name}`);
     }
@@ -120,7 +138,7 @@ export class RLClient extends Client
         this.on("ready", async() =>
         {
             for (const guildId in config.discord.guilds)
-            {
+            {   
                 this.register_commands({ guildId, commands: slashCommands });
             }
         });
