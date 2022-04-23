@@ -3,7 +3,7 @@ import { Collection, Guild, GuildMember, RoleResolvable, Snowflake } from "disco
 import { Event } from "../../structures/Event";
 
 import Mute from "../../models/mute.model";
-import User from "../../models/user.model";
+import User, { IUser } from "../../models/user.model";
 
 import TimeAgo from "../../services/TimeAgo";
 
@@ -34,8 +34,7 @@ export default new Event("guildMemberAdd", async (member: GuildMember) =>
         await member.roles.add(client.muted_role(guild.id), "Applying Existing Mute");
     }
 
-    // Idk the fucking types for this below @DoseOfCode I tried | roles: { [key: Snowflake]: Array<Snowflake> }
-    let roles = (await User.findOne({ discord_id: member.id, roles: { $exists: true } }))?.roles[0] ?? { [guild.id]: [] };
+    let roles: { [key: string]: string[]; } = (await User.findOne({ discord_id: member.id, roles: { $exists: true } }))?.roles ?? { [guild.id]: [] };
 
     if (roles[guild.id]?.length > 0)
     {
