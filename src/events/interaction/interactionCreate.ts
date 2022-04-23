@@ -1,6 +1,7 @@
-import { CommandInteractionOptionResolver } from "discord.js";
+import { CommandInteractionOptionResolver, PermissionResolvable } from "discord.js";
 import { client } from "../..";
 import { Event } from "../../structures/Event";
+import { ICommandInteraction } from "../../typings/Command";
 
 export default new Event("interactionCreate", async (interaction) =>
 {
@@ -15,7 +16,7 @@ export default new Event("interactionCreate", async (interaction) =>
         command.run({
             args: interaction.options as CommandInteractionOptionResolver,
             client,
-            interaction
+            interaction: interaction as ICommandInteraction
         });
     }
 });

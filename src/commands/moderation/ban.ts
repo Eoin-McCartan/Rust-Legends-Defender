@@ -32,8 +32,6 @@ export default new Command({
             return interaction.followUp('❌ Could not find the user.');
         }
 
-        let interaction_member: GuildMember = await interaction.guild.members.fetch(interaction.user.id);
-
         if (!member)
         {
             return interaction.followUp(`❌ Couldn't find ${target} in the server.`);
@@ -49,18 +47,18 @@ export default new Command({
             return interaction.followUp(`❌ Please provide a more detailed reason.`);
         }
 
-        if (member.roles.highest.comparePositionTo(interaction_member.roles.highest) > 0)
+        if (member.roles.highest.comparePositionTo(interaction.member.roles.highest) > 0)
         {
             return interaction.followUp(`❌ Could not ban ${member} as they're higher than you.`);
         }
 
         await member.ban({
-            reason: `${interaction_member.user.username} @ ${new Date().toUTCString()} - ${reason}`,
+            reason: `${interaction.user.username} @ ${new Date().toUTCString()} - ${reason}`,
             days: 7
         });
 
         let member_mention_str:             string = client.mention_str(member.user);
-        let interaction_member_mention_str: string = client.mention_str(interaction_member.user);
+        let interaction_member_mention_str: string = client.mention_str(interaction.user);
 
         client.channel_log(
             interaction.guildId, 

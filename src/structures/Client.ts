@@ -11,7 +11,8 @@ import {
     NonThreadGuildBasedChannel, 
     MessageEmbed, 
     TextChannel,
-    Snowflake
+    Snowflake,
+    MessageAttachment
 } from "discord.js";
 
 import { Event } from "../structures/Event";
@@ -31,7 +32,7 @@ export class RLClient extends Client
         super({ intents: 32767 });
     }
 
-    channel_log = async (guildId: Snowflake, content: string, embed?: MessageEmbed) =>
+    channel_log = async (guildId: Snowflake, content: string, embed?: MessageEmbed, file?: MessageAttachment) =>
     {  
         let guild: Guild = await this.guilds.fetch(guildId);
 
@@ -55,7 +56,15 @@ export class RLClient extends Client
         {
             message_payload = { 
                 ...message_payload,
-                embeds: [embed] 
+                embeds: [embed],
+            };
+        }
+
+        if (file)
+        {
+            message_payload = {
+                ...message_payload,
+                files: [file],
             };
         }
 
@@ -84,7 +93,9 @@ export class RLClient extends Client
 
         let guild: Guild = (await this.guilds.fetch(guildId));
         
-        guild.commands.set(commands);
+        console.log(commands[0]);
+
+        guild.commands.set(commands)
 
         console.log(`[DEBUG] Registerd Guild: ${guild.name}`);
     }

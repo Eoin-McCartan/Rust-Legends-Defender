@@ -5,13 +5,23 @@
 
         "guilds": {
             "893974777956544513": {
+                "whitelisted_urls": ["https://tenor.com"],
+                "servers": ["vital", "atlas"],
+                
                 "channels": {
-                    "Discord Logs": "966879922985504829"
+                    "Discord Logs": "966879922985504829",
+                    "LFG": "967240181327482921"
                 },
 
                 "roles": {
                     "Muted": "966895087864934460"
                 }
+            }
+        },
+
+        "auto_mod": {
+            "settings": {
+                "max_new_lines": 20
             }
         },
 

@@ -25,8 +25,6 @@ export default new Command({
         let target: string  = interaction.options.getString("target");
         let reason: string  = interaction.options.getString("reason");
 
-        let interaction_member: GuildMember = interaction.guild.members.resolve(interaction.user.id);
-
         if (reason?.length < 3)
         {
             return interaction.followUp(`❌ Please provide a more detailed reason.`);
@@ -40,10 +38,10 @@ export default new Command({
             return interaction.followUp(`❌ <@${target}> is not banned.`);
         }
 
-        await interaction.guild.bans.remove(target, `${interaction_member.user.username} @ ${new Date().toUTCString()} - ${reason}`);
+        await interaction.guild.bans.remove(target, `${interaction.user.username} @ ${new Date().toUTCString()} - ${reason}`);
 
         let member_mention_str:             string = client.mention_str(target_ban.user);
-        let interaction_member_mention_str: string = client.mention_str(interaction_member.user);
+        let interaction_member_mention_str: string = client.mention_str(interaction.user);
 
         client.channel_log(
             interaction.guildId, 

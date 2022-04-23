@@ -1,13 +1,13 @@
 import { GuildMember, MessageEmbed, User } from "discord.js";
-import { client } from "../..";
 import { Command } from "../../structures/Command";
 
-const status_emojis = {
-    online:     "🟢",
-    idle:       "🟡",
-    dnd:        "🔴",
-    invisible:  "⚫"
-};
+
+const status_data = {
+    online:     { name: "Online",           emoji: "🟢" },
+    idle:       { name: "Idle",             emoji: "🟡" },
+    dnd:        { name: "Do Not Disturb",   emoji: "🔴" },
+    invisible:  { name: "Offline",          emoji: "⚫" },
+}
 
 export default new Command({
     name: "userinfo",
@@ -21,7 +21,7 @@ export default new Command({
             required: true
         }
     ],
-    run: async ({ interaction }) =>
+    run: async ({ client, interaction }) =>
     {
         let target: User = interaction.options.getUser("target");
 
@@ -37,8 +37,10 @@ export default new Command({
         let member_roles: string    = target_member.roles.cache.filter(r => r.id !== interaction.guild.id).map(x => `\`${x.name}\``).join(", ");
 
         let member_status: string   = target_member.presence?.status
-            ? `${status_emojis[target_member.presence?.status]} **${target_member.presence?.status}**`
-            : "Unknown";
+            ? `${status_data[target_member.presence?.status].emoji} **${status_data[target_member.presence?.status].name}**`
+            : "⚫ Offline";
+
+        let member_mention_str: string = client.mention_str(target);
 
         let embed: MessageEmbed = new MessageEmbed();
             embed.setColor(target_member.roles.highest.color ?? "#000000");
@@ -50,9 +52,9 @@ export default new Command({
                 `▫ **Account Creation:** ${new Date(target.createdAt).toUTCString()}\n` +
                 `▫ **Guild Join Date:** ${new Date(target_member.joinedAt).toUTCString()} ${member_number > 0 ? `\`(#${member_number})\`` : ""}`
             );
-
+            
         return interaction.followUp({ 
-            content: `👤 Information about ${target.tag}:`, 
+            content: `👤 Information about ${member_mention_str}:`, 
             embeds: [embed]
         });
     }

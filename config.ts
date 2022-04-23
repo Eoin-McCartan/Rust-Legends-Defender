@@ -5,6 +5,9 @@ export default interface Config {
 
         guilds: {
             [guildId: string]: {
+                whitelisted_urls: string[];
+                servers: string[];
+
                 channels: {
                     [channelName: string]: string;
                 },
@@ -14,6 +17,12 @@ export default interface Config {
                 }
             }
         },
+
+        auto_mod: {
+            settings: {
+                max_new_lines: number;
+            }
+        }
 
         anti_raid: {
             enabled: boolean;
