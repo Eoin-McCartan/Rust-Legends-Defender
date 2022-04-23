@@ -3,7 +3,7 @@ import { Collection, Guild, GuildMember, RoleResolvable, Snowflake } from "disco
 import { Event } from "../../structures/Event";
 
 import Mute from "../../models/mute.model";
-import User, { IUser } from "../../models/user.model";
+import User from "../../models/user.model";
 
 import TimeAgo from "../../services/TimeAgo";
 
