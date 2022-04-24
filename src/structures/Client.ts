@@ -4,7 +4,6 @@ const config: Config = require("../../config.json");
 import { 
     ApplicationCommand,
     ApplicationCommandData,
-    ApplicationCommandResolvable,
     ApplicationCommandDataResolvable, 
     Client, 
     ClientEvents, 
@@ -15,12 +14,18 @@ import {
     MessageEmbed, 
     TextChannel,
     Snowflake,
-    MessageAttachment
+    MessageAttachment,
+    GuildMember,
+    Role,
+    MessagePayload,
+    MessageOptions
 } from "discord.js";
 
 import { Event } from "../structures/Event";
 import { ICommandType } from "../typings/Command";
 import { ICommandOptions } from "../typings/Client";
+
+import Mute, { IMute } from "../models/mute.model";
 
 import glob from "glob-promise";
 
@@ -40,7 +45,7 @@ export class RLClient extends Client
 
         if (!guild) return;
 
-        let channel_id: string = config.discord.guilds[guild.id]?.channels["Discord Logs"];
+        let channel_id: Snowflake = config.discord.guilds[guild.id]?.channels["Discord Logs"];
 
         if (!channel_id) return;
 
@@ -50,7 +55,7 @@ export class RLClient extends Client
         let date        = new Date().toUTCString();
         let timestamp   = date.match(/\d{2}:\d{2}:\d{2}/); // POGU!
 
-        let message_payload: any = {
+        let message_payload: MessagePayload | MessageOptions = {
             content: `\`[${timestamp}]\` ${content}`,
         };
 
@@ -81,6 +86,8 @@ export class RLClient extends Client
     {
         this.register_modules();
 
+        this.check_mutes();
+
         this.login(config.discord.token);
     }
 
@@ -103,28 +110,71 @@ export class RLClient extends Client
                 defaultPermission: false
             });
 
-            let mod_role_id: string = config.discord.guilds[guild.id]?.roles["Moderator"];
+            let mod_role_id: Snowflake = config.discord.guilds[guild.id]?.roles["Moderator"];
+
+            if (!mod_role_id)
+            {
+                throw new Error(`Moderator role not found for guild ${guild.id}`);
+            }
 
             await guild.commands.permissions.add({
                 command: commands_result[i].id,
                 permissions: [{
                     id: mod_role_id,
-                    type: 'ROLE',
+                    type: "ROLE",
                     permission: true
                 }]
             });
         }
-
-        console.log(`[DEBUG] Registerd Guild: ${guild.name}`);
     }
+
+    check_mutes = async () =>
+    {
+        let mutes = await Mute.find({});
+
+        for (let i = 0; i < mutes.length; i++)
+        {
+            let mute: IMute = mutes[i];
+
+            if (mute.expires > Date.now()) continue;
+            
+            await mute.remove();
+
+            let guild: Guild = this.guilds.resolve(mute.guild);
+
+            if (!guild) continue;
+
+            let member: GuildMember = guild.members.resolve(mute.discord_id);
+
+            if (!member) continue;
+
+            this.channel_log(
+                guild.id,
+                `🔊 ${this.mention_str(this.user)} unmuted ${this.mention_str(member.user)}\n\`[ Reason ]\` Temporary Mute Completed`
+            );
+
+            let role_id: Snowflake = config.discord.guilds[mute.guild]?.roles[mute.type === "LFG" ? "Muted" : "LFG Muted"];
+
+            if (!role_id) continue;
+
+            let role: Role = guild.roles.resolve(role_id);
+
+            if (!role) continue;
+
+            await member.roles.remove(role);
+        }
+        
+        setInterval(this.check_mutes, 5 * 60 * 1000);
+    }
+    
 
     register_modules = async () =>
     {
-        const slashCommands: ApplicationCommandDataResolvable[] = [];
+        const slash_commands: ApplicationCommandDataResolvable[] = [];
 
-        const commandFiles: string[] = await glob(`${__dirname}/../commands/*/*{.ts,.js}`);
+        const command_files: string[] = await glob(`${__dirname}/../commands/*/*{.ts,.js}`);
     
-        commandFiles.forEach(async (filePath: string) =>
+        command_files.forEach(async (filePath: string) =>
         {
             const command: ICommandType = await this.import_file(filePath);
 
@@ -132,20 +182,20 @@ export class RLClient extends Client
 
             this.commands.set(command.name, command);
 
-            slashCommands.push(command);
+            slash_commands.push(command);
         });
         
-        this.on("ready", async() =>
+        this.on("ready", async () =>
         {
             for (const guildId in config.discord.guilds)
             {   
-                this.register_commands({ guildId, commands: slashCommands });
+                this.register_commands({ guildId, commands: slash_commands });
             }
         });
 
-        const eventFiles: string[] = await glob(`${__dirname}/../events/*/*{.ts,.js}`);
+        const event_files: string[] = await glob(`${__dirname}/../events/*/*{.ts,.js}`);
 
-        eventFiles.forEach(async (filePath: string) =>
+        event_files.forEach(async (filePath: string) =>
         {
             const event: Event<keyof ClientEvents> = await this.import_file(filePath);
 
