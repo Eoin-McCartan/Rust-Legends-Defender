@@ -9,7 +9,9 @@ export default new Event("interactionCreate", async (interaction) =>
 {
     if (interaction.isCommand())
     {
-        noTryAsync(async () => await interaction.deferReply());
+        // noTryAsync(async () => );
+
+        await interaction.deferReply()
 
         let command = client.commands.get(interaction.commandName);
 

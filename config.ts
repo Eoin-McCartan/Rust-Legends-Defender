@@ -14,6 +14,13 @@ export default interface Config {
                 
                 roles: {
                     [roleName: string]: string;
+                },
+
+                responses: {
+                    [question: string]: {
+                        channel_name: string;
+                        message: string;
+                    }
                 }
             }
         },

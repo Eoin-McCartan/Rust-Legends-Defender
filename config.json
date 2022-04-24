@@ -10,14 +10,32 @@
                 
                 "channels": {
                     "Discord Logs": "966879922985504829",
-                    "LFG": "967240181327482921"
+                    "LFG": "967240181327482921",
+                    "Server Info": "967614838652162078",
+                    "VIP Status": "967621120587091988"
                 },
 
                 "roles": {
                     "Muted": "966895087864934460",
                     "LFG Muted": "966895087864934460",
                     "Moderator": "927771218558464033"
-                }
+                },
+
+                "responses": {
+                    "serverinfo": { 
+                        "channel_name": "Server Info", 
+                        "message": "Please visit <#{CHANNEL_ID}> for information regarding: `Wipe Times`, `Server Modifications` & `Connection Details`."
+                    },
+
+                    "vip": {
+                        "message": "You can purchase VIP packages via https://store.stevious.vip/"
+                    },
+                    
+                    "restock": {
+                        "channel_name": "VIP Status",
+                        "message": "VIP package restocks have no estimated time. You can keep an eye on <#{CHANNEL_ID}> for the latest restock information."
+                    }
+                }           
             }
         },
 

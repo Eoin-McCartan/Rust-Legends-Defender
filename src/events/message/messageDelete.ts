@@ -4,8 +4,7 @@ import { Event } from "../../structures/Event";
 
 export default new Event("messageDelete", async (message: Message) =>
 {
-    if (message.author.bot)
-        return;
+    if (message.author.bot) return;
 
     let message_str: string = message.content;
     let message_mention_str: string = client.mention_str(message.author);
