@@ -136,7 +136,7 @@ export class RLClient extends Client
         {
             let mute: IMute = mutes[i];
 
-            if (mute.expires > Date.now()) continue;
+            if (mute.expires === 0 || mute.expires > Date.now()) continue;
             
             await mute.remove();
 
