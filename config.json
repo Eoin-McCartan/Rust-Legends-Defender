@@ -22,19 +22,9 @@
                 },
 
                 "responses": {
-                    "serverinfo": { 
-                        "channel_name": "Server Info", 
-                        "message": "Please visit <#{CHANNEL_ID}> for information regarding: `Wipe Times`, `Server Modifications` & `Connection Details`."
-                    },
-
-                    "vip": {
-                        "message": "You can purchase VIP packages via https://store.stevious.vip/"
-                    },
-                    
-                    "restock": {
-                        "channel_name": "VIP Status",
-                        "message": "VIP package restocks have no estimated time. You can keep an eye on <#{CHANNEL_ID}> for the latest restock information."
-                    }
+                    "serverinfo":       { "channel_name": "Server Info",    "message": "Please visit <#{CHANNEL_ID}> for information regarding: `Wipe Times`, `Server Modifications` & `Connection Details`." },
+                    "restock":          { "channel_name": "VIP Status",     "message": "VIP package restocks have no estimated time. You can keep an eye on <#{CHANNEL_ID}> for the latest restock information." },
+                    "vip":              { "message": "You can purchase VIP packages via https://store.stevious.vip/" }
                 }           
             }
         },
