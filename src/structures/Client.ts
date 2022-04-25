@@ -130,16 +130,16 @@ export class RLClient extends Client
 
     check_mutes = async () =>
     {
-        let mutes = await Mute.find({});
+        let mutes: (IMute & { _id: any; })[] = await Mute.find({
+            $and: [
+                { 'expires': { $ne: 0 } },
+                { 'expires': { $lte: Date.now() } }
+            ]
+        });
 
         for (let i = 0; i < mutes.length; i++)
         {
             let mute: IMute = mutes[i];
-
-            if (mute.expires === 0 || mute.expires > Date.now()) continue;
-            
-            await mute.remove();
-
             let guild: Guild = this.guilds.resolve(mute.guild);
 
             if (!guild) continue;
@@ -162,6 +162,7 @@ export class RLClient extends Client
             if (!role) continue;
 
             await member.roles.remove(role);
+            await mute.remove();
         }
         
         setInterval(this.check_mutes, 5 * 60 * 1000);
