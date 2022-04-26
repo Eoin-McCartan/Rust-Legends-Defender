@@ -148,11 +148,6 @@ export class RLClient extends Client
 
             if (!member) continue;
 
-            this.channel_log(
-                guild.id,
-                `🔊 ${this.mention_str(this.user)} unmuted ${this.mention_str(member.user)}\n\`[ Reason ]\` Temporary Mute Completed`
-            );
-
             let role_id: Snowflake = config.discord.guilds[mute.guild]?.roles[mute.type === "LFG" ? "Muted" : "LFG Muted"];
 
             if (!role_id) continue;
@@ -163,6 +158,11 @@ export class RLClient extends Client
 
             await member.roles.remove(role);
             await mute.remove();
+            
+            await this.channel_log(
+                guild.id,
+                `🔊 ${this.mention_str(this.user)} unmuted ${this.mention_str(member.user)}\n\`[ Reason ]\` Temporary Mute Completed`
+            );
         }
         
         setInterval(this.check_mutes, 5 * 60 * 1000);
