@@ -63,17 +63,17 @@ export default new Command({
         let member_mention_str:             string = client.mention_str(member.user);
         let interaction_member_mention_str: string = client.mention_str(interaction.user);
 
-        if ((await Mute.countDocuments({ guild_id: interaction.guild.id, user_id: member.id })) > 0)
+        if ((await Mute.countDocuments({ guild_id: interaction.guild.id, discord_id: member.id })) > 0)
         {
             return interaction.followUp(`❌ ${member} is already muted.`);
         }
-
+        
         await Mute.create({
             type: "MUTE",
             guild_id: interaction.guild.id,
             discord_id: target.id,
             moderator_id: interaction.user.id,
-            expires: parsedDuration ? 0 : (Date.now() + parsedDuration),
+            expires: parsedDuration ? (Date.now() + parsedDuration) : 0,
             reason,
         });
 
