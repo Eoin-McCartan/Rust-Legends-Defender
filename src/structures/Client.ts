@@ -28,6 +28,7 @@ import { ICommandOptions } from "../typings/Client";
 import Mute, { IMute } from "../models/mute.model";
 
 import glob from "glob-promise";
+import { client } from "..";
 
 export class RLClient extends Client
 {
@@ -86,8 +87,6 @@ export class RLClient extends Client
     {
         this.register_modules();
 
-        this.check_mutes();
-
         this.login(config.discord.token);
     }
 
@@ -120,7 +119,7 @@ export class RLClient extends Client
         for (let i = 0; i < mutes.length; i++)
         {
             let mute: IMute = mutes[i];
-            let guild: Guild = this.guilds.resolve(mute.guild);
+            let guild: Guild = this.guilds.resolve(mute.guild_id);
 
             if (!guild) continue;
 
@@ -128,7 +127,7 @@ export class RLClient extends Client
 
             if (!member) continue;
 
-            let role_id: Snowflake = config.discord.guilds[mute.guild]?.roles[mute.type === "LFG" ? "Muted" : "LFG Muted"];
+            let role_id: Snowflake = config.discord.guilds[mute.guild_id]?.roles[mute.type === "MUTE" ? "Muted" : "LFG Muted"];
 
             if (!role_id) continue;
 
@@ -138,7 +137,7 @@ export class RLClient extends Client
 
             await member.roles.remove(role);
             await mute.remove();
-            
+
             await this.channel_log(
                 guild.id,
                 `🔊 ${this.mention_str(this.user)} unmuted ${this.mention_str(member.user)}\n\`[ Reason ]\` Temporary Mute Completed`
@@ -172,6 +171,8 @@ export class RLClient extends Client
             {   
                 this.register_commands({ guildId, commands: slash_commands });
             }
+
+            this.check_mutes();
         });
 
         const event_files: string[] = await glob(`${__dirname}/../events/*/*{.ts,.js}`);
