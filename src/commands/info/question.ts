@@ -9,7 +9,7 @@ interface IResponse {
 
 export default new Command({
     name: "question",
-    description: "Use this to select premade responses to any questions.",
+    description: "Use this to select pre-made responses to any questions.",
     options: [
         {
             name: "question",
@@ -31,9 +31,10 @@ export default new Command({
             return interaction.followUp({ content: "❌ Here are a list of valid arguments: " + questions.map(x => `\`${x}\``)?.join(", "), ephemeral: true });
         }
 
-        let channel_id: Snowflake = client.config.discord.guilds[interaction.guild.id]?.channels[response.channel_name];
+        let channel_id: Snowflake = client.config.discord.guilds[interaction.guild.id]?.channels[response.channel_name] ?? interaction.channel.id;
 
-        response.message = response.message.includes("{CHANNEL_ID}") 
+        response.message = 
+            response.message.includes("{CHANNEL_ID}") 
                 ? response.message.replace(/{CHANNEL_ID}/g, channel_id) 
                 : response.message;
         
