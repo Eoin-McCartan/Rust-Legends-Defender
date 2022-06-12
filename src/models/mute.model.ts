@@ -4,7 +4,7 @@ import { Schema, Document } from "mongoose";
 export interface IMute extends Document {
     type: string;
 
-    guild: string;
+    guild_id: string;
 
     discord_id: string;
 
@@ -17,6 +17,8 @@ const MuteSchema: Schema = (
     new Schema(
         {
             type: String,
+
+            guild_id: String,
 
             discord_id: String,
 
