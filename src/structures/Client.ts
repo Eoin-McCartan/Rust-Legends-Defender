@@ -36,7 +36,7 @@ export class RLClient extends Client
 
     constructor()
     {
-        super({ intents: 32767 });
+        super({ intents: 32767, partials: ["MESSAGE", "CHANNEL", "REACTION"] });
     }
 
     channel_log = async (guildId: Snowflake, content: string, embed?: MessageEmbed, file?: MessageAttachment) =>
@@ -101,30 +101,10 @@ export class RLClient extends Client
         if (!guildId) return;
 
         let guild: Guild = (await this.guilds.fetch(guildId));
-        
-        let commands_result: ApplicationCommand[] = [...(await guild.commands.set(commands)).values()];
 
-        for (let i = 0; i < commands_result.length; i++)
+        if (guild)
         {
-            await commands_result[i].edit(<ApplicationCommandData>{
-                defaultPermission: false
-            });
-
-            let mod_role_id: Snowflake = config.discord.guilds[guild.id]?.roles["Moderator"];
-
-            if (!mod_role_id)
-            {
-                throw new Error(`Moderator role not found for guild ${guild.id}`);
-            }
-
-            await guild.commands.permissions.add({
-                command: commands_result[i].id,
-                permissions: [{
-                    id: mod_role_id,
-                    type: "ROLE",
-                    permission: true
-                }]
-            });
+            await guild.commands.set(commands);
         }
     }
 
@@ -132,8 +112,8 @@ export class RLClient extends Client
     {
         let mutes: (IMute & { _id: any; })[] = await Mute.find({
             $and: [
-                { 'expires': { $ne: 0 } },
-                { 'expires': { $lte: Date.now() } }
+                { "expires": { $ne: 0 } },
+                { "expires": { $lte: Date.now() } }
             ]
         });
 

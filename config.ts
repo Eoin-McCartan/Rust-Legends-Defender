@@ -28,6 +28,7 @@ export default interface Config {
         auto_mod: {
             settings: {
                 max_new_lines: number;
+                blacklisted_emotes: string[];
             }
         }
 
