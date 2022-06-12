@@ -9,6 +9,7 @@
                 "servers": ["vital", "atlas"],
                 
                 "channels": {
+                    "Announcements": "985566813167443988",
                     "Discord Logs": "966879922985504829",
                     "LFG": "967240181327482921",
                     "Server Info": "967614838652162078",
@@ -31,7 +32,10 @@
 
         "auto_mod": {
             "settings": {
-                "max_new_lines": 20
+                "max_new_lines": 20,
+                "blacklisted_emotes": [
+                    "🇳"
+                ]
             }
         },
 
