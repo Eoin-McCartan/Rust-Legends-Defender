@@ -81,7 +81,30 @@ export class RLClient extends Client
 
     mention_str = (user: User) => `${user} **${user.username}**#${user.discriminator} (${user.id})`;
     
-    muted_role = (guildId: Snowflake) => config.discord.guilds[guildId]?.roles["Muted"];
+    muted_role = (guildId: Snowflake) =>
+    {
+        let guild: Guild = this.guilds.resolve(guildId);
+
+        if (!guild) return;
+
+        let role: string = config.discord.guilds[guildId]?.roles["Muted"];
+
+        if (!role) return;
+
+        return guild.roles.resolve(role);
+    }
+    lfg_muted_role = (guildId: Snowflake) =>
+    {
+        let guild: Guild = this.guilds.resolve(guildId);
+
+        if (!guild) return;
+
+        let role: string = config.discord.guilds[guildId]?.roles["LFG Muted"];
+
+        if (!role) return;
+
+        return guild.roles.resolve(role);
+    }
 
     start = () =>
     {
