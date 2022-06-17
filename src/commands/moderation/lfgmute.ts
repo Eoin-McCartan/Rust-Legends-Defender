@@ -1,18 +1,18 @@
 import { GuildMember, User } from "discord.js";
 import { Command } from "../../structures/Command";
 
-import Mute, { IMute } from "../../models/mute.model";
+import Mute from "../../models/mute.model";
 
 import ms from "ms";
 
 export default new Command({
-    name: "mute",
-    description: "Mutes a user in the discord.",
+    name: "lfgmute",
+    description: "LFG Mutes a user in the discord.",
     userPermissions: ["MANAGE_MESSAGES"],
     options: [
         {
             name: "target",
-            description: "Select a user you want to mute.",
+            description: "Select a user you want to LFG mute.",
             type: "USER",
             required: true
         },
@@ -55,7 +55,7 @@ export default new Command({
 
         if (member.roles.highest.comparePositionTo(interaction.member.roles.highest) > 0)
         {
-            return interaction.followUp(`❌ Couldn't mute ${member} as they're higher than you.`);
+            return interaction.followUp(`❌ Couldn't LFG mute ${member} as they're higher than you.`);
         }
 
         let parsedDuration: number = ms(duration ?? "0") ?? 0;
@@ -65,11 +65,11 @@ export default new Command({
 
         if ((await Mute.countDocuments({ guild_id: interaction.guild.id, discord_id: member.id })) > 0)
         {
-            return interaction.followUp(`❌ ${member} is already muted.`);
+            return interaction.followUp(`❌ ${member} is already LFG muted.`);
         }
         
         await Mute.create({
-            type: "MUTE",
+            type: "LFG",
             guild_id: interaction.guild.id,
             discord_id: target.id,
             moderator_id: interaction.user.id,
@@ -77,15 +77,15 @@ export default new Command({
             reason,
         });
 
-        await member.roles.add(client.muted_role(interaction.guildId), reason);
+        await member.roles.add(client.lfg_muted_role(interaction.guildId), reason);
 
         client.channel_log(
             interaction.guildId, 
             parsedDuration !== 0
-                ? `🤐 ${interaction_member_mention_str} temporarily muted ${member_mention_str} for **${duration}**\n\`[ Reason ]\` ${reason}`
-                : `🔇 ${interaction_member_mention_str} permanently muted ${member_mention_str}\n\`[ Reason ]\` ${reason}`
+                ? `🤐 ${interaction_member_mention_str} temporarily LFG muted ${member_mention_str} for **${duration}**\n\`[ Reason ]\` ${reason}`
+                : `🔇 ${interaction_member_mention_str} permanently LFG muted ${member_mention_str}\n\`[ Reason ]\` ${reason}`
         );
 
-        return interaction.followUp(`✅ ${member} was muted.`);
+        return interaction.followUp(`✅ ${member} was LFG muted.`);
     }
 })

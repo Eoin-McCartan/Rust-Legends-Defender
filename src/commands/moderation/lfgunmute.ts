@@ -1,18 +1,18 @@
 import { GuildMember, User } from "discord.js";
 import { Command } from "../../structures/Command";
 
-import Mute, { IMute } from "../../models/mute.model";
+import Mute from "../../models/mute.model";
 
 import ms from "ms";
 
 export default new Command({
-    name: "unmute",
-    description: "Unmutes a user in the discord.",
+    name: "lfgunmute",
+    description: "LFG Unmutes a user in the discord.",
     userPermissions: ["MANAGE_MESSAGES"],
     options: [
         {
             name: "target",
-            description: "Select a user you want to unmute.",
+            description: "Select a user you want to LFG unmute.",
             type: "USER",
             required: true
         },
@@ -48,7 +48,7 @@ export default new Command({
 
         if (member.roles.highest.comparePositionTo(interaction.member.roles.highest) > 0)
         {
-            return interaction.followUp(`❌ Couldn't unmute ${member} as they're higher than you.`);
+            return interaction.followUp(`❌ Couldn't LFG unmute ${member} as they're higher than you.`);
         }
 
         let member_mention_str:             string = client.mention_str(member.user);
@@ -56,18 +56,18 @@ export default new Command({
 
         if ((await Mute.countDocuments({ guild_id: interaction.guild.id, user_id: member.id })) < 0)
         {
-            return interaction.followUp(`❌ ${member} is not muted.`);
+            return interaction.followUp(`❌ ${member} is not LFG muted.`);
         }
 
-        await Mute.deleteOne({ type: "MUTE", guild_id: interaction.guild.id, user_id: member.id });
+        await Mute.deleteOne({ type: "LFG", guild_id: interaction.guild.id, user_id: member.id });
 
-        await member.roles.remove(client.muted_role(interaction.guildId), reason);
+        await member.roles.remove(client.lfg_muted_role(interaction.guildId), reason);
 
         client.channel_log(
             interaction.guildId,
-            `🔊 ${interaction_member_mention_str} unmuted ${member_mention_str}\n\`[ Reason ]\` ${reason}`
+            `🔊 ${interaction_member_mention_str} LFG unmuted ${member_mention_str}\n\`[ Reason ]\` ${reason}`
         );
 
-        return interaction.followUp(`✅ ${member} was unmuted.`);
+        return interaction.followUp(`✅ ${member} was LFG unmuted.`);
     }
 })
