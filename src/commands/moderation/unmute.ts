@@ -59,7 +59,7 @@ export default new Command({
             return interaction.followUp(`❌ ${member} is not muted.`);
         }
 
-        await Mute.deleteOne({ type: "MUTE", guild_id: interaction.guild.id, user_id: member.id });
+        await Mute.deleteOne({ guild_id: interaction.guild.id, user_id: member.id });
 
         await member.roles.remove(client.muted_role(interaction.guildId), reason);
 

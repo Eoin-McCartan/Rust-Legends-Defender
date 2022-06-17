@@ -48,7 +48,7 @@ export default new Command({
             return interaction.followUp(`❌ Couldn't find ${target} in the server.`);
         }
 
-        if (reason.length < 3)
+        if (reason?.length < 3)
         {
             return interaction.followUp(`❌ Please provide a more detailed reason.`);
         }
