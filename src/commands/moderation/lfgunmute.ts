@@ -23,12 +23,10 @@ export default new Command({
             required: true
         }
     ],
-
     run: async ({ client, interaction }) =>
     {
         let target: User        = interaction.options.getUser("target");
         let reason: string      = interaction.options.getString("reason");
-
         let member: GuildMember = interaction.guild.members.resolve(target.id);
 
         if (!member)
@@ -60,7 +58,7 @@ export default new Command({
         }
 
         await Mute.deleteOne({ type: "LFG", guild_id: interaction.guild.id, user_id: member.id });
-
+        
         await member.roles.remove(client.lfg_muted_role(interaction.guildId), reason);
 
         client.channel_log(
