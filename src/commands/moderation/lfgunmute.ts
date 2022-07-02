@@ -3,12 +3,9 @@ import { Command } from "../../structures/Command";
 
 import Mute from "../../models/mute.model";
 
-import ms from "ms";
-
 export default new Command({
     name: "lfgunmute",
     description: "LFG Unmutes a user in the discord.",
-    userPermissions: ["MANAGE_MESSAGES"],
     options: [
         {
             name: "target",

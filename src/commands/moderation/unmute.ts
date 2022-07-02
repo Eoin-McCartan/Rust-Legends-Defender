@@ -1,14 +1,11 @@
 import { GuildMember, User } from "discord.js";
 import { Command } from "../../structures/Command";
 
-import Mute, { IMute } from "../../models/mute.model";
-
-import ms from "ms";
+import Mute from "../../models/mute.model";
 
 export default new Command({
     name: "unmute",
     description: "Unmutes a user in the discord.",
-    userPermissions: ["MANAGE_MESSAGES"],
     options: [
         {
             name: "target",

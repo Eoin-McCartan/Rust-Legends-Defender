@@ -6,7 +6,6 @@ import ms from "ms";
 export default new Command({
     name: "lfgmute",
     description: "LFG Mutes a user in the discord.",
-    userPermissions: ["MANAGE_MESSAGES"],
     options: [
         {
             name: "target",

@@ -1,10 +1,9 @@
-import { Collection, Guild, GuildBan, GuildBanResolvable, GuildMember } from "discord.js";
+import { Collection,  GuildBan } from "discord.js";
 import { Command } from "../../structures/Command";
 
 export default new Command({
     name: "unban",
     description: "Unbans a user from the discord.",
-    userPermissions: ["BAN_MEMBERS"],
     options: [
         {
             name: "target",

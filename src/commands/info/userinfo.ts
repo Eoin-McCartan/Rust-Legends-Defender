@@ -12,7 +12,6 @@ const status_data = {
 export default new Command({
     name: "userinfo",
     description: "Display information about a user.",
-    userPermissions: ["MANAGE_MESSAGES"],
     options: [
         {
             name: "target",

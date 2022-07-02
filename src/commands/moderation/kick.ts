@@ -4,7 +4,6 @@ import { Command } from "../../structures/Command";
 export default new Command({
     name: "kick",
     description: "Kick a user from the discord.",
-    userPermissions: ["KICK_MEMBERS"],
     options: [
         {
             name: "target",

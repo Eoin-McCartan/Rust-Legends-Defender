@@ -4,7 +4,6 @@ import { Command } from "../../structures/Command";
 export default new Command({
     name: "ban",
     description: "Ban a user from the discord.",
-    userPermissions: ["BAN_MEMBERS"],
     options: [
         {
             name: "target",
