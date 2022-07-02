@@ -52,12 +52,12 @@ export default new Command({
         let member_mention_str:             string = client.mention_str(member.user);
         let interaction_member_mention_str: string = client.mention_str(interaction.user);
 
-        if ((await Mute.countDocuments({ guild_id: interaction.guild.id, user_id: member.id })) < 0)
+        if ((await Mute.countDocuments({ guild_id: interaction.guild.id, discord_id: member.id })) < 0)
         {
             return interaction.followUp(`❌ ${member} is not LFG muted.`);
         }
 
-        await Mute.deleteOne({ type: "LFG", guild_id: interaction.guild.id, user_id: member.id });
+        await Mute.deleteOne({ type: "LFG", guild_id: interaction.guild.id, discord_id: member.id });
         
         await member.roles.remove(client.lfg_muted_role(interaction.guildId), reason);
 

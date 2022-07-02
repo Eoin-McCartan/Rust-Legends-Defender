@@ -25,6 +25,14 @@ export default interface Config {
             }
         },
 
+        rust_legends: {
+            guildId: string;
+
+            channels: {
+                [channelName: string]: string;
+            }
+        }
+
         auto_mod: {
             settings: {
                 max_new_lines: number;

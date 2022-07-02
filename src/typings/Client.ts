@@ -1,7 +1,6 @@
 import { ApplicationCommandDataResolvable } from "discord.js";
 
-export interface ICommandOptions
-{
+export interface ICommandOptions {
     guildId?: string;
     commands: ApplicationCommandDataResolvable[];
 }

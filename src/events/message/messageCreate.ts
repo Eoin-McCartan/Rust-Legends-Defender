@@ -1,9 +1,11 @@
 import { client } from "../..";
 
 import {
+    AnyChannel,
     DMChannel,
     Guild,
     Message,
+    MessageEmbed,
     NewsChannel,
     PartialDMChannel,
     TextChannel,
@@ -22,17 +24,59 @@ export default new Event("messageCreate", async (message: Message) =>
 
     let message_new_lines: number = message.content.split("\n").length;
 
-    if (ContainsURL(message)
-        || ContainsServer(message)
-        || message_new_lines > client.config.discord.auto_mod.settings.max_new_lines
-    )
+    if (ContainsURL(message) || message_new_lines > client.config.discord.auto_mod.settings.max_new_lines)
     {
         if (message.deletable)
         {
             message.delete();
         }
     }
+
+    if (ContainsServer(message))
+    {
+        PostLFGFeed(message);
+    }
 });
+
+function PostLFGFeed(message: Message)
+{
+    const embed: MessageEmbed = new MessageEmbed();
+          embed.setColor("RANDOM");
+          embed.setAuthor({
+            name: `${message.guild.name} - LFG Trigger`,
+            iconURL: message.guild.iconURL()
+          });
+          embed.setDescription(`[Jump to Message](${message.url})`);
+          embed.addField("Member", client.mention_str(message.author));
+          embed.addField("Trigger Word", `\`\`\`${GetServerMentioned(message)}\`\`\``);
+          embed.setTimestamp();
+
+    let lfg_feed: string = client.config.discord.rust_legends.channels["LFG Feed"];
+
+    if (!lfg_feed) return;
+
+    let lfg_channel: AnyChannel = client.channels.resolve(lfg_feed);
+        lfg_channel = lfg_channel as TextChannel;
+
+    if (!lfg_channel) return;
+
+    lfg_channel.send({ embeds: [embed] });
+};
+
+function GetServerMentioned(message: Message) : string
+{
+    let server_list: string[] = client.config.discord.guilds[message.guild.id]?.servers ?? [];
+
+    for (let server of server_list)
+    {
+        if (message.content.toLowerCase().includes(server.toLowerCase()))
+        {
+            return server;
+        }
+    }
+
+    return "Error: Server Not Found";
+}
 
 function ContainsURL(message: Message): boolean
 {
@@ -46,10 +90,8 @@ function ContainsURL(message: Message): boolean
 
     let whitelisted_urls: string[] = client.config.discord.guilds[message.guild.id].whitelisted_urls;
 
-    if (whitelisted_urls.includes(`https://${url.split("/")[2]}`)) return false;
-
-    return true;
-}
+    return whitelisted_urls.includes(`https://${url.split("/")[2]}`);
+};
 
 function ContainsServer(message: Message): boolean
 {
@@ -61,7 +103,5 @@ function ContainsServer(message: Message): boolean
 
     let server_list: string[] = client.config.discord.guilds[message.guild.id]?.servers ?? [];
 
-    if (server_list.some(server => content.includes(server))) return true;
-
-    return false;
-}
+    return server_list.some(server => content.includes(server));
+};
