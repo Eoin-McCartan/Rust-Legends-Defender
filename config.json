@@ -1,6 +1,6 @@
 {
     "discord": {
-        "token": "ODcxMjA3NTM2OTA3NDA3MzYw.YQX9Pw.mRXEHYcYBen0NR15I9y93eePKwA",
+        "token": "",
         "prefix": "!",
 
         "guilds": {
@@ -10,15 +10,15 @@
                 
                 "channels": {
                     "Announcements": "985566813167443988",
-                    "Discord Logs": "966879922985504829",
-                    "LFG": "967240181327482921",
+                    "Discord Logs": "985570885211668540",
+                    "LFG": "992882983054884895",
                     "Server Info": "967614838652162078",
                     "VIP Status": "967621120587091988"
                 },
 
                 "roles": {
-                    "Muted": "966895087864934460",
-                    "LFG Muted": "966895087864934460",
+                    "Muted": "985571799330865202",
+                    "LFG Muted": "992882486042427483",
                     "Moderator": "927771218558464033"
                 },
 
@@ -27,6 +27,12 @@
                     "restock":          { "channel_name": "VIP Status",     "message": "VIP package restocks have no estimated time. You can keep an eye on <#{CHANNEL_ID}> for the latest restock information." },
                     "vip":              { "message": "You can purchase VIP packages via https://store.stevious.vip/" }
                 }           
+            }
+        },
+
+        "rust_legends": {
+            "channels": {
+                "LFG Feed": "992887049482944532"
             }
         },
 
