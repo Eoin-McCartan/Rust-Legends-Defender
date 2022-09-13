@@ -37,6 +37,7 @@ export default interface Config {
             settings: {
                 max_new_lines: number;
                 blacklisted_emotes: string[];
+                bad_words: string[];
             }
         }
 

@@ -2,14 +2,9 @@ import { client } from "../..";
 
 import {
     AnyChannel,
-    DMChannel,
-    Guild,
     Message,
     MessageEmbed,
-    NewsChannel,
-    PartialDMChannel,
     TextChannel,
-    ThreadChannel
 } from "discord.js";
 
 import { Event } from "../../structures/Event";
@@ -24,7 +19,12 @@ export default new Event("messageCreate", async (message: Message) =>
 
     let message_new_lines: number = message.content.split("\n").length;
 
-    if (ContainsURL(message) || message_new_lines > client.config.discord.auto_mod.settings.max_new_lines)
+    if 
+    (
+        ContainsURL(message)
+        || message_new_lines > client.config.discord.auto_mod.settings.max_new_lines
+        || ContainsBadWord(message)
+    )
     {
         if (message.deletable)
         {
@@ -104,4 +104,13 @@ function ContainsServer(message: Message): boolean
     let server_list: string[] = client.config.discord.guilds[message.guild.id]?.servers ?? [];
 
     return server_list.some(server => content.includes(server));
+};
+
+function ContainsBadWord(message: Message)
+{
+    let content: string = message.content.toLowerCase();
+
+    let bad_word_list: string[] = client.config.discord.auto_mod.settings.bad_words;
+
+    return bad_word_list.some(word => content.includes(word));
 };
